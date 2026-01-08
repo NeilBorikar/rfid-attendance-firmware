@@ -1,9 +1,17 @@
 #ifndef OFFLINE_QUEUE_H
 #define OFFLINE_QUEUE_H
 
-#include <ArduinoJson.h>
+#include <Arduino.h>
 
-void queueEvent(JsonDocument& event);
-void resendQueuedEvents();
+// =============================
+// LIFECYCLE
+// =============================
+void offline_queue_init();
 
-#endif
+// =============================
+// QUEUE OPERATIONS
+// =============================
+void queue_event(const String& uid, const String& timestamp);
+void retry_queue();
+
+#endif // OFFLINE_QUEUE_H

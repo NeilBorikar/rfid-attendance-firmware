@@ -1,0 +1,17 @@
+# Build files
+*.bin
+*.elf
+*.map
+
+# Arduino / PlatformIO
+.pio/
+.build/
+.vscode/
+
+# Secrets
+config_local.h
+*.env
+
+# OS junk
+.DS_Store
+Thumbs.db
