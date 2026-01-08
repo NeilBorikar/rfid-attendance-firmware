@@ -21,9 +21,10 @@ void time_init() {
 String get_iso_timestamp() {
     struct tm timeinfo;
 
-    if (!getLocalTime(&timeinfo)) {
-        return "1970-01-01T00:00:00";
-    }
+   if (!getLocalTime(&timeinfo)) {
+    return String(millis() / 1000);
+}
+
 
     char buffer[25];
     strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%S", &timeinfo);

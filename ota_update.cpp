@@ -26,4 +26,6 @@ void ota_init() {
 
 void ota_loop() {
     ArduinoOTA.handle();
+    yield();
+
 }

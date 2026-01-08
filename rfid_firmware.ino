@@ -57,4 +57,5 @@ void loop() {
             queue_event(uid, timestamp);
         }
     }
+    yield();
 }

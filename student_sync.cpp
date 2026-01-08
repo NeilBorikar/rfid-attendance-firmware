@@ -8,7 +8,7 @@
 // =============================
 // CONFIG
 // =============================
-#define MAX_STUDENTS 500   // adjust as per school size
+#define MAX_STUDENTS 150   // adjust as per school size
 
 // =============================
 // INTERNAL STATE
@@ -49,19 +49,27 @@ static bool fetch_and_apply_students(bool force) {
                  STUDENT_SYNC_ENDPOINT +
                  "?device_id=" + DEVICE_ID;
 
-    http.begin(url);
+    WiFiClientSecure client;
+    client.setInsecure();
+
+    HTTPClient http;
+    http.begin(client, url);
+
     http.setTimeout(HTTP_TIMEOUT);
     http.addHeader("Content-Type", "application/json");
     http.addHeader("X-Device-Key", DEVICE_API_KEY);
 
     int httpCode = http.GET();
+    yield();
     if (httpCode != 200) {
         http.end();
         return false;
     }
 
-    StaticJsonDocument<4096> doc;
+    StaticJsonDocument<2048> doc;
+
     DeserializationError err = deserializeJson(doc, http.getString());
+    yield();
     http.end();
 
     if (err) {

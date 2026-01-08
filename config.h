@@ -12,7 +12,7 @@
 // ==================================================
 // BACKEND BASE
 // ==================================================
-#define BACKEND_BASE_URL "https://api.yourdomain.com"
+#define BACKEND_BASE_URL "https://rfid-attendance-production.up.railway.app"
 
 
 // ==================================================

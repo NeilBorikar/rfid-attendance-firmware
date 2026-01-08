@@ -37,6 +37,7 @@ static bool fetch_and_apply_config(bool force) {
     lastSyncTime = now;
 
     if (WiFi.status() != WL_CONNECTED) {
+        yield(); 
         return false;
     }
 
@@ -44,19 +45,24 @@ static bool fetch_and_apply_config(bool force) {
     String url = String(BACKEND_BASE_URL) +
                  DEVICE_CONFIG_ENDPOINT + "/" + DEVICE_ID;
 
-    http.begin(url);
+    WiFiClientSecure client;
+    client.setInsecure();
+    http.begin(client, url);
+
     http.setTimeout(HTTP_TIMEOUT);
     http.addHeader("Content-Type", "application/json");
     http.addHeader("X-Device-Key", DEVICE_API_KEY);
 
     int httpCode = http.GET();
+    yield();
     if (httpCode != 200) {
         http.end();
         return false;
     }
 
-    StaticJsonDocument<512> doc;
+    StaticJsonDocument<768> doc;
     DeserializationError err = deserializeJson(doc, http.getString());
+    yield();
     http.end();
 
     if (err) {

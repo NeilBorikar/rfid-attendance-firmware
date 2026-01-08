@@ -50,6 +50,7 @@ void retry_queue() {
 
     while (file.available()) {
         String line = file.readStringUntil('\n');
+        yield();
         line.trim();
         if (line.length() == 0) continue;
 
