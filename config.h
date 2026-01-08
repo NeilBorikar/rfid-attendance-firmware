@@ -27,7 +27,7 @@
 // ==================================================
 // AUTH / SECURITY (RECOMMENDED)
 // ==================================================
-#define DEVICE_API_KEY "REPLACE_WITH_SECURE_KEY"
+#define DEVICE_API_KEY "DEV_MODE"
 
 
 // ==================================================
