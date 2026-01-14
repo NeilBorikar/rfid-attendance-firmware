@@ -21,9 +21,15 @@ void wifi_init() {
     WiFi.setAutoReconnect(true);
     WiFi.persistent(false);
 
-    lastAttemptTime = 0;
-    connecting = false;
+    Serial.print("[WIFI] Bootstrapping SSID: ");
+    Serial.println(currentSSID);
+
+    WiFi.begin(currentSSID.c_str(), currentPassword.c_str());
+
+    lastAttemptTime = millis();
+    connecting = true;
 }
+
 
 // =============================
 // CONNECT (SAFE, NON-BLOCKING)
