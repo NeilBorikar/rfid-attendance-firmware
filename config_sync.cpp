@@ -2,7 +2,9 @@
 #include "config.h"
 #include "wifi_manager.h"
 
-#include <HTTPClient.h>
+#include <ESP8266WiFi.h>
+#include <WiFiClientSecure.h>
+#include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
 
 // =============================
@@ -37,87 +39,75 @@ static bool fetch_and_apply_config(bool force) {
     lastSyncTime = now;
 
     if (WiFi.status() != WL_CONNECTED) {
-        yield(); 
+        yield();
         return false;
     }
 
-    HTTPClient http;
     String url = String(BACKEND_BASE_URL) +
                  DEVICE_CONFIG_ENDPOINT + "/" + DEVICE_ID;
 
     WiFiClientSecure client;
-    client.setInsecure();
-    http.begin(client, url);
+    client.setInsecure();  // Railway TLS
 
+    HTTPClient http;
+    http.begin(client, url);
     http.setTimeout(HTTP_TIMEOUT);
+
     http.addHeader("Content-Type", "application/json");
     http.addHeader("X-Device-Key", DEVICE_API_KEY);
 
     int httpCode = http.GET();
     yield();
+
     if (httpCode != 200) {
         http.end();
         return false;
     }
 
-    StaticJsonDocument<768> doc;
+    StaticJsonDocument<512> doc;
     DeserializationError err = deserializeJson(doc, http.getString());
     yield();
     http.end();
 
-    if (err) {
-        return false;
-    }
+    if (err) return false;
 
     int newVersion = doc["version"] | -1;
-    if (!force && newVersion == configVersion) {
-        return true;  // No change
-    }
+    if (!force && newVersion == configVersion) return true;
 
     configVersion = newVersion;
 
-    // =============================
-    // APPLY DEVICE FLAGS
-    // =============================
     deviceEnabled = doc["enabled"] | true;
 
-    // =============================
-    // APPLY WIFI CONFIG (HOT UPDATE)
-    // =============================
     const char* newSSID = doc["wifi_ssid"] | "";
     const char* newPassword = doc["wifi_password"] | "";
 
     if (strlen(newSSID) > 0 && currentSSID != newSSID) {
         currentSSID = newSSID;
         currentPassword = newPassword;
-
-        Serial.println("WiFi config updated from backend");
         connectWiFi(currentSSID.c_str(), currentPassword.c_str());
     }
 
-    Serial.println("Device config synced");
-    Serial.print("Enabled: ");
-    Serial.println(deviceEnabled);
-
+    Serial.println("[CONFIG] Synced");
+    yield();
     return true;
 }
 
 // =============================
-// LOOP (SAFE POLLING)
+// LOOP
 // =============================
 void config_sync_loop() {
     fetch_and_apply_config(false);
 }
 
 // =============================
-// MANUAL / FORCE SYNC
+// FORCE SYNC
 // =============================
 void force_config_sync() {
     fetch_and_apply_config(true);
 }
 
 // =============================
-// RUNTIME ACCESS
+// ACCESSOR
 // =============================
 bool is_device_enabled() {
     return deviceEnabled;

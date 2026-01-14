@@ -19,17 +19,21 @@ void setup() {
     Serial.println("\n[BOOT] RFID Firmware Starting");
 
     wifi_init();
+
+    // 🔥 BOOTSTRAP WIFI
+    connectWiFi(BOOTSTRAP_WIFI_SSID, BOOTSTRAP_WIFI_PASSWORD);
+
     time_init();
     offline_queue_init();
     rfid_init();
 
     config_sync_init();
     student_sync_init();
-
     ota_init();
 
     Serial.println("[BOOT] System ready");
 }
+
 
 void loop() {
     wifi_loop();

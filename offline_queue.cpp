@@ -1,25 +1,26 @@
 #include "offline_queue.h"
 #include "config.h"
-#include "http_client.h"
+#include <ESP8266HTTPClient.h>
+#include <WiFiClient.h>
 
-#include <SPIFFS.h>
+#include <FS.h>
 
 // =============================
 // INIT
 // =============================
 void offline_queue_init() {
-    if (!SPIFFS.begin(true)) {
-        Serial.println("[OFFLINE_QUEUE] SPIFFS mount failed");
-    } else {
-        Serial.println("[OFFLINE_QUEUE] SPIFFS mounted");
+    if (!SPIFFS.begin()) {
+        Serial.println("[SPIFFS] Mount failed");
+        return;
     }
+    Serial.println("[SPIFFS] Mounted");
 }
 
 // =============================
 // ADD EVENT TO QUEUE
 // =============================
 void queue_event(const String& uid, const String& timestamp) {
-    File file = SPIFFS.open(OFFLINE_QUEUE_FILE, FILE_APPEND);
+    File file = SPIFFS.open(OFFLINE_QUEUE_FILE, "a");
     if (!file) {
         Serial.println("[OFFLINE_QUEUE] Failed to open queue file");
         return;
@@ -41,7 +42,7 @@ void retry_queue() {
         return;
     }
 
-    File file = SPIFFS.open(OFFLINE_QUEUE_FILE, FILE_READ);
+    File file = SPIFFS.open(OFFLINE_QUEUE_FILE, "r");
     if (!file) {
         return;
     }
@@ -75,7 +76,7 @@ void retry_queue() {
     SPIFFS.remove(OFFLINE_QUEUE_FILE);
 
     if (remainingData.length() > 0) {
-        File rewrite = SPIFFS.open(OFFLINE_QUEUE_FILE, FILE_WRITE);
+        File rewrite = SPIFFS.open(OFFLINE_QUEUE_FILE, "w");
         if (rewrite) {
             rewrite.print(remainingData);
             rewrite.close();

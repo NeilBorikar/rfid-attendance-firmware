@@ -36,6 +36,12 @@
 #define WIFI_RETRY_DELAY 5000          // ms
 #define HTTP_TIMEOUT 8000              // ms
 
+// ==================================================
+// BOOTSTRAP WIFI (FIRST CONNECTION ONLY)
+// ==================================================
+#define BOOTSTRAP_WIFI_SSID     "RLT1"
+#define BOOTSTRAP_WIFI_PASSWORD "Aslv@2468"
+
 
 // ==================================================
 // SYNC & POLLING INTERVALS

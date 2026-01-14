@@ -43,6 +43,7 @@ bool rfid_scan(String& uid) {
 
     rfid.PICC_HaltA();
     rfid.PCD_StopCrypto1();
+    yield();
 
     lastScanTime = now;
 

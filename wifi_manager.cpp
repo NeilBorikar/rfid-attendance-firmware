@@ -9,8 +9,9 @@
 static unsigned long lastAttemptTime = 0;
 static bool connecting = false;
 
-static String currentSSID = "";
-static String currentPassword = "";
+static String currentSSID = "YOUR_WIFI_NAME";
+static String currentPassword = "YOUR_WIFI_PASSWORD";
+
 
 // =============================
 // INIT
@@ -52,9 +53,9 @@ void connectWiFi(const char* ssid, const char* password) {
 // =============================
 void wifi_loop() {
     if (WiFi.status() == WL_CONNECTED) {
-        connecting = false;
-        return;
-    }
+    Serial.print("[WIFI] Connected, IP: ");
+    Serial.println(WiFi.localIP());
+}
 
     unsigned long now = millis();
 
