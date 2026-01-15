@@ -58,23 +58,30 @@ void connectWiFi(const char* ssid, const char* password) {
 // LOOP (AUTO-RECONNECT)
 // =============================
 void wifi_loop() {
-    if (WiFi.status() == WL_CONNECTED) {
-    Serial.print("[WIFI] Connected, IP: ");
-    Serial.println(WiFi.localIP());
-}
+    wl_status_t status = WiFi.status();
 
+    if (status == WL_CONNECTED) {
+        static bool wasConnected = false;
+        if (!wasConnected) {
+            Serial.print("[WIFI] Connected, IP: ");
+            Serial.println(WiFi.localIP());
+            wasConnected = true;
+        }
+        return;
+    }
+
+    static unsigned long lastRetry = 0;
     unsigned long now = millis();
 
-    if (!connecting || (now - lastAttemptTime >= WIFI_RETRY_DELAY)) {
-        if (currentSSID.length() > 0) {
-            Serial.println("[WIFI] Reconnecting...");
-            WiFi.disconnect();
-            WiFi.begin(currentSSID.c_str(), currentPassword.c_str());
-            connecting = true;
-            lastAttemptTime = now;
-        }
+    if (now - lastRetry >= WIFI_RETRY_DELAY) {
+        Serial.println("[WIFI] Reconnecting...");
+        WiFi.disconnect();
+        WiFi.begin(currentSSID.c_str(), currentPassword.c_str());
+        lastRetry = now;
     }
 }
+
+
 
 // =============================
 // STATUS CHECK

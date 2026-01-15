@@ -2,6 +2,7 @@
 #include "config.h"
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
+#include "http_client.h" 
 
 #include <FS.h>
 
